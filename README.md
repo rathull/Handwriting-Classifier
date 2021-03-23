@@ -1,0 +1,2 @@
+# Handwriting Classifier
+Using neural networks, this project can classify any image of a digit, from 0 through 9. This project gets a dataset, trains a deep learning model, and saves the model. It has an accuracy of 90%. The model is availabe as .pkl files and can be accessed through Python's Pickle library.
