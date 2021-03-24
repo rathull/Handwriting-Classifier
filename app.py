@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-import pickle
+from predict import predict
 SIZE = 28
 
 canvas = np.ones((SIZE * 4, SIZE * 4), dtype='uint8') * 255
@@ -15,7 +15,6 @@ def draw_line(image, start_point, end_point):
 
 def mouse_event(event, x, y, flags, params):
     global start, end, canvas, is_drawing
-    # if event == cv.EVENT_LBUTTONDOWN and is_drawing: 
     if event == cv.EVENT_LBUTTONDOWN: 
         start = (x, y)
         is_drawing = True
@@ -30,12 +29,16 @@ def mouse_event(event, x, y, flags, params):
 
 cv.namedWindow("Test")
 cv.setMouseCallback("Test", mouse_event)
-
-pickle1 = np.array([])
-pickled = 0
+start = False
+correct = 0
+predicted = 0
+outputs = ['\nPREDICTION | CORRECT | CUMULATIVE SCORE']
 
 while(True):
     cv.imshow("Test", canvas)
+    if start == False:
+        start = True
+        print('\n\nHow to use this app: Write out numbers in the pop-up windows. When you are done, use the \'p\' key to make a prediction. If it is correct, type \'Y\' in the console, otherwise type \'N\'. To clear the drawing area, press \'c\'. To end the program, press \'q\'.')
     key = cv.waitKey(1) & 0xFF
     if key == ord('q'): break  # Quit
     elif key == ord('c'): 
@@ -49,18 +52,14 @@ while(True):
             int(SIZE/2) : ((SIZE*4)-int(SIZE/2)), 
             int(SIZE/2) : ((SIZE*4)-int(SIZE/2))
         ]
-        print(image)
-        print(image.shape)
-        filename = 'Test_Pickles\\num.pkl'
-        outfile = open(filename, 'wb')
-        if pickled == 0: pickle1 = image
-        if pickled == 1:
-            pickle.dump(np.array([pickle1, image]), outfile)
-            outfile.close()
-            break
-        pickled += 1
+        p = int(predict(image))
+        g = str(input(str(f'Was {str(p)} your number? ')))
+        predicted += 1
+        if 'y' in g.lower(): correct += 1
+        score = '{:.2%}'.format(correct/predicted)
+        output = '    ' + str(p) + '           ' + g.upper() + '          ' + score
+        outputs.append(output)
 
 cv.destroyAllWindows()
-
-# Tutorial for the code can be found here:
-# https://medium.com/@edwardpie/building-a-cnn-for-recognising-mouse-drawn-digits-with-keras-opencv-mnist-72a7ae7a070a
+print('\n'.join(outputs))
+print(f'\n\nFINAL SCORE: ' + '{:.2%}'.format(correct/predicted), end='\n\n')
