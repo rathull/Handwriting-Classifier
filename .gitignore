@@ -3,3 +3,5 @@ app.py
 
 # Dataset
 mnist.pkl
+Test_Pickles/
+assets/

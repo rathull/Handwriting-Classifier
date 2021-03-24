@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
-SIZE = 280
+import pickle
+SIZE = 28
 
 canvas = np.ones((SIZE * 4, SIZE * 4), dtype='uint8') * 255
 canvas[
@@ -30,6 +31,9 @@ def mouse_event(event, x, y, flags, params):
 cv.namedWindow("Test")
 cv.setMouseCallback("Test", mouse_event)
 
+pickle1 = np.array([])
+pickled = 0
+
 while(True):
     cv.imshow("Test", canvas)
     key = cv.waitKey(1) & 0xFF
@@ -46,6 +50,15 @@ while(True):
             int(SIZE/2) : ((SIZE*4)-int(SIZE/2))
         ]
         print(image)
+        print(image.shape)
+        filename = 'Test_Pickles\\num.pkl'
+        outfile = open(filename, 'wb')
+        if pickled == 0: pickle1 = image
+        if pickled == 1:
+            pickle.dump(np.array([pickle1, image]), outfile)
+            outfile.close()
+            break
+        pickled += 1
 
 cv.destroyAllWindows()
 
